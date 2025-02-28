@@ -1,4 +1,4 @@
-import "./assets/main.css";
+import "./assets/css/main.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import ToastPlugin from "vue-toast-notification";
