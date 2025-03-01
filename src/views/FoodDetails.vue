@@ -8,7 +8,7 @@
             <ol class="breadcrumb">
               <li class="breadcrumb-item"><router-link to="/">Home</router-link></li>
               <li class="breadcrumb-item"><router-link to="/foods">Foods</router-link></li>
-              <li class="breadcrumb-item active" aria-current="page">Food Detail</li>
+              <li class="breadcrumb-item active" aria-current="page"><strong>Food Detail</strong></li>
             </ol>
           </nav>
         </div>
