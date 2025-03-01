@@ -81,7 +81,7 @@ const pemesanan = () => {
 
   if (pesan.value.jumlah_pemesanan) {
     axios
-      .post("http://localhost:3000/orders", dataKirim)
+      .post("http://localhost:3000/carts", dataKirim)
       .then(() => {
         router.push({ path: "/cart" });
         toast.success("Pesanan berhasil dibuat .", {

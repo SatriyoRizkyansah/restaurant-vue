@@ -69,6 +69,33 @@
           </table>
         </div>
       </div>
+
+      <!-- Form Checkout -->
+      <div class="row justify-content-end">
+        <div class="col-md-4">
+          <form v-on:submit.prevent="pesanFood">
+            <div class="form-group">
+              <label for="nama">Nama</label>
+              <input type="text" class="form-control" id="nama" v-model="pesan.nama" />
+            </div>
+            <div class="form-group mt-2">
+              <label for="nomer_meja">Nomer Meja</label>
+              <input type="text" class="form-control" id="nomer_meja" v-model="pesan.nomer_meja" />
+            </div>
+
+            <button type="submit" class="btn btn-success mt-2 float-end" @click="checkout">
+              <div class="float-start">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cart-plus-fill mb-1 me-1" viewBox="0 0 16 16">
+                  <path
+                    d="M.5 1a.5.5 0 0 0 0 1h1.11l.401 1.607 1.498 7.985A.5.5 0 0 0 4 12h1a2 2 0 1 0 0 4 2 2 0 0 0 0-4h7a2 2 0 1 0 0 4 2 2 0 0 0 0-4h1a.5.5 0 0 0 .491-.408l1.5-8A.5.5 0 0 0 14.5 3H2.89l-.405-1.621A.5.5 0 0 0 2 1zM6 14a1 1 0 1 1-2 0 1 1 0 0 1 2 0m7 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0M9 5.5V7h1.5a.5.5 0 0 1 0 1H9v1.5a.5.5 0 0 1-1 0V8H6.5a.5.5 0 0 1 0-1H8V5.5a.5.5 0 0 1 1 0"
+                  />
+                </svg>
+              </div>
+              Checkout
+            </button>
+          </form>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -78,10 +105,13 @@ import Navbar from "@/components/Navbar.vue";
 import { ref, onMounted } from "vue";
 import axios from "axios";
 import { useToast } from "vue-toast-notification";
+import { useRouter } from "vue-router";
 
 const toast = useToast();
 const carts = ref([]);
 const total_harga = ref(0);
+const pesan = ref({});
+const router = useRouter();
 
 const getCart = (data) => {
   carts.value = data;
@@ -97,7 +127,7 @@ const getCart = (data) => {
 
 const deleteCart = (id) => {
   axios
-    .delete("http://localhost:3000/orders/" + id)
+    .delete("http://localhost:3000/carts/" + id)
     .then(() => {
       toast.success("Cart berhasil dihapus .", {
         type: "success",
@@ -108,7 +138,7 @@ const deleteCart = (id) => {
 
       // Update data keranjang
       axios
-        .get("http://localhost:3000/orders/")
+        .get("http://localhost:3000/carts/")
         .then((response) => {
           console.log("berhasil", response);
           getCart(response.data);
@@ -124,7 +154,7 @@ const deleteCart = (id) => {
 
 onMounted(() => {
   axios
-    .get("http://localhost:3000/orders/")
+    .get("http://localhost:3000/carts/")
     .then((response) => {
       console.log("berhasil", response);
       getCart(response.data);
@@ -138,6 +168,40 @@ const getTotalHarga = () => {
   total_harga.value = carts.value.reduce((total, cart) => {
     return total + cart.product.harga * cart.pesan.jumlah_pemesanan;
   }, 0);
+};
+
+const checkout = () => {
+  if (pesan.value.nama && pesan.value.nomer_meja) {
+    const finalOrders = [pesan.value, carts.value];
+    axios
+      .post("http://localhost:3000/orders/", finalOrders)
+      .then(() => {
+        // Delete all carts
+        carts.value.map((cart) => {
+          axios.delete("http://localhost:3000/carts/" + cart.id).catch((error) => {
+            console.log(error);
+          });
+        });
+
+        router.push({ path: "/orders" });
+        toast.success("Checkout berhasil dibuat .", {
+          type: "success",
+          position: "top-right",
+          duration: 3000,
+          dismissible: true,
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  } else {
+    toast.error("Nama dan nomer meja harus di isi!", {
+      type: "error",
+      position: "top-right",
+      duration: 3000,
+      dismissible: true,
+    });
+  }
 };
 </script>
 
