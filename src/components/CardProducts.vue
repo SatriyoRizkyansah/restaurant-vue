@@ -4,7 +4,7 @@
     <div class="card-body">
       <h5 class="card-title">{{ product.nama }}</h5>
       <p class="card-text">Harga : Rp.{{ product.harga }}</p>
-      <a href="#" class="btn btn-success"
+      <router-link :to="'/foods/' + product.id" class="btn btn-success"
         ><div class="float-start">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cart-plus-fill mb-1 me-1" viewBox="0 0 16 16">
             <path
@@ -12,13 +12,15 @@
             />
           </svg>
         </div>
-        Pesan</a
+        Pesan</router-link
       >
     </div>
   </div>
 </template>
 
 <script setup>
+import router from "@/router";
+
 defineProps({
   product: Object,
 });
